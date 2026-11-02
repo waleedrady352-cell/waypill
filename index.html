@@ -223,16 +223,20 @@ button:disabled{opacity:.6;cursor:wait}
 }
 
 /* كود الفرز والمبالغ */
+/* اتجاه LTR مهم حتى يكون مربع D-01 في الشمال */
 
 .code-money-row{
   height:48px;
   flex:0 0 48px;
   display:grid;
-  grid-template-columns:88px 1fr;
+  grid-template-columns:88px minmax(0,1fr);
+  direction:ltr;
   border-bottom:2px solid #111;
 }
 
 .sort-code{
+  grid-column:1;
+  width:88px;
   background:#111;
   color:#fff;
   display:flex;
@@ -245,6 +249,7 @@ button:disabled{opacity:.6;cursor:wait}
 }
 
 .money-details{
+  grid-column:2;
   display:flex;
   align-items:center;
   justify-content:space-around;
@@ -253,6 +258,7 @@ button:disabled{opacity:.6;cursor:wait}
   font-size:13px;
   font-weight:900;
   white-space:nowrap;
+  direction:rtl;
 }
 
 /* QR ثم التاجر ثم العميل */
@@ -261,18 +267,22 @@ button:disabled{opacity:.6;cursor:wait}
   height:95px;
   flex:0 0 95px;
   display:grid;
-  grid-template-columns:88px 1fr 1fr;
+  grid-template-columns:88px minmax(0,1fr) minmax(0,1fr);
   direction:ltr;
   border-bottom:2px solid #111;
 }
 
+/* نفس العمود الأول الذي يوجد به مربع D-01 */
+
 .qr-area{
   grid-column:1;
+  width:88px;
   display:flex;
   align-items:center;
   justify-content:center;
   border-right:2px solid #111;
   padding:3px;
+  overflow:hidden;
 }
 
 #qrcode{width:76px;height:76px}
@@ -289,6 +299,7 @@ button:disabled{opacity:.6;cursor:wait}
   border-right:2px solid #111;
   font-size:17px;
   font-weight:900;
+  min-width:0;
 }
 
 .receiver-area{
@@ -298,6 +309,7 @@ button:disabled{opacity:.6;cursor:wait}
   direction:rtl;
   font-size:17px;
   font-weight:900;
+  min-width:0;
 }
 
 .cell-heading{font-size:17px;font-weight:900}
@@ -366,7 +378,7 @@ button:disabled{opacity:.6;cursor:wait}
   white-space:nowrap;
 }
 
-/* وصف الشحنة: يستوعب المساحة الإضافية */
+/* وصف الشحنة */
 
 .description-section{
   flex:1 1 auto;
@@ -515,7 +527,7 @@ button:disabled{opacity:.6;cursor:wait}
   border-bottom:1px solid #111;
 }
 
-/* تعديل Created / Printed */
+/* Created / Printed / By */
 
 .footer-section{
   height:24px;
@@ -541,7 +553,7 @@ button:disabled{opacity:.6;cursor:wait}
   text-overflow:ellipsis;
 }
 
-.footer-section > div:last-child{
+.footer-section>div:last-child{
   flex:0 0 auto;
   font-size:9px;
   font-weight:900;
@@ -627,7 +639,7 @@ button:disabled{opacity:.6;cursor:wait}
 
   <div class="field">
     <label>كود الفرز</label>
-    <input id="sortCode" value="D-06">
+    <input id="sortCode" value="D-01">
   </div>
 
   <div class="field">
@@ -751,11 +763,13 @@ button:disabled{opacity:.6;cursor:wait}
 
 <div id="label">
 
+  <!-- الباركود العلوي -->
   <div class="top-barcode-section">
     <svg id="topBarcode"></svg>
-    <div class="top-barcode-number" id="topBarcodeNumber">D-06-9323443399</div>
+    <div class="top-barcode-number" id="topBarcodeNumber">D-01-9323443399</div>
   </div>
 
+  <!-- اللوجو واسم الفرع -->
   <div class="brand-row">
     <div class="brand-area">
       <svg class="bosta-logo"
@@ -770,8 +784,7 @@ button:disabled{opacity:.6;cursor:wait}
           <path d="M2 10 L17 19 L32 10"/>
           <path d="M17 19 L17 36"/>
         </g>
-        <text x="42"
-              y="31"
+        <text x="42" y="31"
               font-family="Arial, Helvetica, sans-serif"
               font-size="29"
               font-weight="900"
@@ -784,13 +797,16 @@ button:disabled{opacity:.6;cursor:wait}
     <div class="delivery-type" id="pShipmentType">توصيل</div>
   </div>
 
+  <!-- مربع كود الفرز فوق QR -->
   <div class="code-money-row">
-    <div class="sort-code" id="pSortCode">D-06</div>
+    <div class="sort-code" id="pSortCode">D-01</div>
+
     <div class="money-details">
       <div class="money-item" id="refusalFeeItem">
         تكلفة عدم الاستلام:
         <span id="pRefusalFee">0</span> ج.م
       </div>
+
       <div class="money-item">
         مبلغ التحصيل:
         <span id="pCod">550</span> ج.م
@@ -798,6 +814,7 @@ button:disabled{opacity:.6;cursor:wait}
     </div>
   </div>
 
+  <!-- QR والتاجر والعميل -->
   <div class="receiver-row">
     <div class="qr-area">
       <div id="qrcode"></div>
@@ -815,38 +832,46 @@ button:disabled{opacity:.6;cursor:wait}
     </div>
   </div>
 
+  <!-- العنوان -->
   <div class="address-section">
     <div class="address-line">
       <span class="address-label">المنطقة | </span>
       <span id="pArea">المنوفيه</span>
     </div>
+
     <div class="address-line">
       <span class="address-label">العنوان | </span>
       <span id="pAddress">أشمون المنوفيه اشمون قريه سمالي بجوار مسجد البحري</span>
     </div>
+
     <div class="address-line">
       <span class="address-label">علامة مميزة | </span>
       <span id="pLandmark">-</span>
     </div>
   </div>
 
+  <!-- فتح الشحنة -->
   <div class="open-row">
     <div class="pill">فتح الشحنة : <span id="pOpen">نعم</span></div>
     <div class="pill"><span id="pPieces">1</span> قطع</div>
   </div>
 
+  <!-- وصف الشحنة -->
   <div class="description-section">
     وصف الشحنة |
     <div class="description-content" id="pDescription">ماكينه الحلاقه والتنعيم المحمولة</div>
   </div>
 
+  <!-- الجزء السفلي -->
   <div class="bottom-section">
+
     <div class="bottom-left">
       <div class="tracking-bottom">
         <div class="tracking-title">Tracking Number</div>
         <svg id="bottomBarcode"></svg>
         <div class="bottom-tracking-number" id="pTracking">9323443399</div>
       </div>
+
       <div class="bottom-black-code" id="pBottomCode1">FM ABO RAWASH</div>
       <div class="bottom-black-code" id="pBottomCode2">HR-16</div>
     </div>
@@ -858,18 +883,22 @@ button:disabled{opacity:.6;cursor:wait}
           برجاء السماح بمعاينه المنتج، وفي حاله عدم الاستلام يتم دفع 10 جنيه مصاريف شحن
         </span>
       </div>
+
       <div class="order-reference">
         Order Reference:
         <span id="pOrderRef">094853cc1</span>
       </div>
     </div>
+
   </div>
 
+  <!-- المرتجع -->
   <div class="return-section">
     عنوان المرتجع |
     <span id="pReturn">الجيزه - المنيب - المنيب</span>
   </div>
 
+  <!-- بيانات الإنشاء -->
   <div class="footer-section">
     <div class="footer-created">
       Created: <span id="pCreatedDate">1 Nov, 2026</span>
@@ -955,7 +984,7 @@ function generateQR(code){
 
 function updateLabel(){
   const tracking=getValue("tracking") || "0000000000";
-  const sortCode=getValue("sortCode") || "D-06";
+  const sortCode=getValue("sortCode") || "D-01";
 
   setText("pHub",getValue("hub"));
   setText("pShipmentType",getValue("shipmentType"));
@@ -1009,13 +1038,18 @@ function updateLabel(){
   document.getElementById("status").textContent="تم تحديث البوليصة بنجاح";
 }
 
+/* تحديث تلقائي */
+
 fieldIds.forEach(id=>{
   const element=document.getElementById(id);
+
   if(element){
     element.addEventListener("input",updateLabel);
     element.addEventListener("change",updateLabel);
   }
 });
+
+/* رقم شحنة عشوائي */
 
 function generateTracking(){
   const randomNumber=Math.floor(
@@ -1025,6 +1059,8 @@ function generateTracking(){
   document.getElementById("tracking").value=randomNumber;
   updateLabel();
 }
+
+/* مسح البيانات */
 
 function clearForm(){
   if(!confirm("هل أنت متأكد أنك تريد مسح بيانات الشحنة؟")) return;
@@ -1036,7 +1072,7 @@ function clearForm(){
   document.getElementById("company").value="bosta";
   document.getElementById("hub").value="MONUFIA HUB";
   document.getElementById("shipmentType").value="توصيل";
-  document.getElementById("sortCode").value="D-06";
+  document.getElementById("sortCode").value="D-01";
   document.getElementById("refusalFee").value="0";
   document.getElementById("openShipment").value="لا";
   document.getElementById("pieces").value="1";
@@ -1044,6 +1080,8 @@ function clearForm(){
   updateLabel();
   document.getElementById("status").textContent="تم مسح البيانات";
 }
+
+/* تحميل PDF */
 
 async function downloadPDF(){
   const button=document.getElementById("downloadButton");
@@ -1095,6 +1133,8 @@ async function downloadPDF(){
     button.textContent="تحميل PDF";
   }
 }
+
+/* تشغيل الصفحة */
 
 updateLabel();
 </script>
